@@ -1,5 +1,3 @@
-# sistema-gestao-solidaria-mvp
-MVP web em Java e Spring Boot para cadastro de famílias, atendimentos e estoque de uma associação de moradores.
 # Sistema de Gestão Solidária para Associação de Moradores
 
 MVP web que organiza o cadastro de famílias, o registro de atendimentos e o controle de estoque de uma associação de moradores.
