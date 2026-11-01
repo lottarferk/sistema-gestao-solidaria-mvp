@@ -9,6 +9,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class FamiliaService {
 
+    public record ResultadoCadastro(Familia familia, List<Familia> parecidas) {
+        public boolean temAlerta() {
+            return familia == null;
+        }
+    }
+
     private final FamiliaRepository repo;
 
     public FamiliaService(FamiliaRepository repo) {
@@ -33,5 +39,13 @@ public class FamiliaService {
     public Familia salvar(Familia f) {
         f.setNomeNormalizado(normalizar(f.getNomeResponsavel()));
         return repo.save(f);
+    }
+
+    public ResultadoCadastro cadastrar(Familia f, boolean confirmar) {
+        List<Familia> parecidas = parecidas(f);
+        if (!parecidas.isEmpty() && !confirmar) {
+            return new ResultadoCadastro(null, parecidas);
+        }
+        return new ResultadoCadastro(salvar(f), List.of());
     }
 }

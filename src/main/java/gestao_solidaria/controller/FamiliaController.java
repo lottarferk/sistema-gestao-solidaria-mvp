@@ -27,12 +27,12 @@ public class FamiliaController {
     @PostMapping
     public ResponseEntity<?> cadastrar(@Valid @RequestBody Familia familia,
                                        @RequestParam(defaultValue = "false") boolean confirmar) {
-        List<Familia> parecidas = service.parecidas(familia);
-        if (!parecidas.isEmpty() && !confirmar) {
+        FamiliaService.ResultadoCadastro r = service.cadastrar(familia, confirmar);
+        if (r.temAlerta()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                 "alerta", "Já existe um cadastro com nome e telefone parecidos.",
-                "existentes", parecidas));
+                "existentes", r.parecidas()));
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(familia));
+        return ResponseEntity.status(HttpStatus.CREATED).body(r.familia());
     }
 }
