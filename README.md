@@ -31,3 +31,25 @@ docs ... prototipo, requisitos e plano de validação
 
 ## Status
 Em desenvolvimento. Dados de demonstração fictícios.
+
+## Como executar
+Requisitos: Java 21 e Git.
+
+    git clone https://github.com/lottarferk/sistema-gestao-solidaria-mvp.git
+    cd sistema-gestao-solidaria-mvp
+    mvnw.cmd spring-boot:run
+
+No Linux ou Mac, use ./mvnw no lugar de mvnw.cmd.
+
+A aplicação sobe em http://localhost:8080 com banco H2 em memória.
+Usuário: user. A senha é gerada a cada execução e aparece no terminal,
+na linha "Using generated security password".
+
+## Testes
+
+    mvnw.cmd test
+
+## Endpoints disponíveis
+- GET /api/familias?q=nome: busca famílias por nome ou documento
+- POST /api/familias: cadastra uma família e devolve alerta de duplicidade
+  (código 409) quando já existe cadastro com nome e telefone parecidos
