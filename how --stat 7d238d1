@@ -1,0 +1,8 @@
+[33mcommit 755f476c0fa46856425ca0387151b2a62eed4334[m
+Author: lottarferk <109446680+lottarferk@users.noreply.github.com>
+Date:   Fri Oct 30 19:03:11 2026 +0900
+
+    feat: cria entidades Familia e ItemEstoque com JPA e repositórios
+
+ src/main/resources/application.properties | 8 [32m+++++++[m[31m-[m
+ 1 file changed, 7 insertions(+), 1 deletion(-)
