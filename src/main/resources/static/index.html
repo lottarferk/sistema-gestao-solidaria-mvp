@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema de Gestão Solidária</title>
+<style>
+:root{--bg:#f1f6f5;--card:#fff;--ink:#14232b;--mute:#41555f;--pri:#0b5d66;--onpri:#fff;--bd:#6f8791;--focus:#b34700;--warn-bg:#fff1cc;--warn-bd:#8a5a00;--warn-ink:#3d2a00;--ok-bg:#dff3e5;--ok-bd:#1e6b3a;--ok-ink:#0e3a1e;--err-bg:#fde6e4;--err-bd:#a11a1a;--err-ink:#561010;--fs:16px}
+body.contraste{--bg:#000;--card:#000;--ink:#fff;--mute:#fff;--pri:#ffe600;--onpri:#000;--bd:#fff;--focus:#00e5ff;--warn-bg:#000;--warn-bd:#ffe600;--warn-ink:#ffe600;--ok-bg:#000;--ok-bd:#7dff9b;--ok-ink:#7dff9b;--err-bg:#000;--err-bd:#ff8a8a;--err-ink:#ffd0d0}
+body.grande{--fs:20px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:var(--fs)/1.5 system-ui,"Segoe UI",Arial,sans-serif}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:0;background:var(--pri);color:var(--onpri);padding:8px 12px}
+.skip:focus{left:8px;top:8px;z-index:5}
+.top{background:var(--pri);color:var(--onpri);padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-bottom:2px solid var(--bd)}
+.top h1{margin:0;font-size:1.2em}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tools button{min-height:44px;padding:0 14px;border:2px solid var(--onpri);background:transparent;color:var(--onpri);border-radius:8px;font:inherit;font-weight:700;cursor:pointer}
+.tools button[aria-pressed="true"]{background:var(--onpri);color:var(--pri)}
+main{max-width:760px;margin:0 auto;padding:16px}
+section{margin-bottom:28px}
+h2{font-size:1.3em;margin:0 0 10px}
+h3{font-size:1.05em;margin:0 0 6px}
+label{display:block;font-weight:700;margin:12px 0 4px}
+input{width:100%;min-height:48px;padding:10px 12px;border:2px solid var(--bd);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+.help,.note{color:var(--mute);font-size:.95em;margin:0 0 6px}
+.btn{display:block;width:100%;min-height:48px;margin-top:10px;padding:10px 14px;border:2px solid var(--pri);border-radius:8px;background:var(--card);color:var(--pri);font:inherit;font-weight:700;cursor:pointer}
+.btn.primary{background:var(--pri);color:var(--onpri)}
+.link{background:none;border:0;color:var(--pri);text-decoration:underline;min-height:44px;width:100%;font:inherit;font-weight:700;cursor:pointer;margin-top:4px}
+.card{background:var(--card);border:2px solid var(--bd);border-radius:12px;padding:14px;margin:12px 0}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;border:2px solid var(--ok-bd);background:var(--ok-bg);color:var(--ok-ink);font-weight:700;font-size:.9em}
+.box{border:3px solid;border-radius:12px;padding:14px;margin:12px 0}
+.box h3{display:flex;gap:8px}
+.box.warn{background:var(--warn-bg);border-color:var(--warn-bd);color:var(--warn-ink)}
+.box.ok{background:var(--ok-bg);border-color:var(--ok-bd);color:var(--ok-ink)}
+.box.err{background:var(--err-bg);border-color:var(--err-bd);color:var(--err-ink)}
+.pair{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+dl{margin:0}dt{font-weight:700}dd{margin:0 0 6px}
+</style>
+</head>
+<body>
+<a class="skip" href="#principal">Ir para o conteúdo</a>
+<header class="top">
+  <h1>Sistema de Gestão Solidária</h1>
+  <div class="tools">
+    <button type="button" id="bTexto" aria-pressed="false">Aumentar texto</button>
+    <button type="button" id="bContraste" aria-pressed="false">Alto contraste</button>
+  </div>
+</header>
+<main id="principal">
+  <section aria-labelledby="tBusca">
+    <h2 id="tBusca">Buscar família</h2>
+    <form id="fBusca">
+      <label for="q">Nome ou documento da família</label>
+      <p class="help" id="qh">Digite parte do nome. Exemplo: Ana</p>
+      <input id="q" type="text" autocomplete="off" aria-describedby="qh">
+      <button class="btn primary" type="submit">Buscar</button>
+    </form>
+    <p id="statusBusca" class="note" role="status"></p>
+    <div id="resultados"></div>
+  </section>
+
+  <section aria-labelledby="tCad">
+    <h2 id="tCad">Cadastrar nova família</h2>
+    <div id="avisos" role="alert" tabindex="-1"></div>
+    <form id="fCad" novalidate>
+      <label for="nome">Nome do responsável</label>
+      <input id="nome" type="text" autocomplete="off">
+      <label for="tel">Telefone (opcional)</label>
+      <input id="tel" type="text" inputmode="tel" autocomplete="off">
+      <label for="bairro">Bairro (opcional)</label>
+      <input id="bairro" type="text" autocomplete="off">
+      <label for="doc">Documento (opcional)</label>
+      <input id="doc" type="text" autocomplete="off">
+      <label for="pessoas">Quantidade de pessoas na família</label>
+      <input id="pessoas" type="number" inputmode="numeric" min="1">
+      <button class="btn primary" type="submit">Cadastrar família</button>
+    </form>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+function el(tag, cls, texto) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (texto !== undefined) e.textContent = texto;
+  return e;
+}
+
+$('bTexto').addEventListener('click', function () {
+  this.setAttribute('aria-pressed', document.body.classList.toggle('grande'));
+});
+$('bContraste').addEventListener('click', function () {
+  this.setAttribute('aria-pressed', document.body.classList.toggle('contraste'));
+});
+
+function dados(titulo, f) {
+  const c = el('article', 'card');
+  c.append(el('h3', null, titulo));
+  const dl = el('dl');
+  [['Nome', f.nomeResponsavel], ['Telefone', f.telefone || 'não informado'],
+   ['Bairro', f.bairro || 'não informado'], ['Pessoas', String(f.qtdPessoas)]]
+    .forEach(([k, v]) => { dl.append(el('dt', null, k), el('dd', null, v)); });
+  if (f.dataCadastro) dl.append(el('dt', null, 'Cadastro'), el('dd', null, f.dataCadastro));
+  c.append(dl);
+  return c;
+}
+
+function caixa(tipo, icone, titulo, texto) {
+  const b = el('div', 'box ' + tipo);
+  const h = el('h3');
+  const i = el('span', null, icone);
+  i.setAttribute('aria-hidden', 'true');
+  h.append(i, el('span', null, titulo));
+  b.append(h, el('p', null, texto));
+  return b;
+}
+
+function mostrar(caixaEl) {
+  const area = $('avisos');
+  area.replaceChildren(caixaEl);
+  area.focus();
+}
+
+async function buscar(termo) {
+  const status = $('statusBusca');
+  const lista = $('resultados');
+  lista.replaceChildren();
+  try {
+    const r = await fetch('/api/familias?q=' + encodeURIComponent(termo));
+    if (!r.ok) throw new Error('falha');
+    const familias = await r.json();
+    status.textContent = familias.length === 0
+      ? 'Nenhuma família encontrada.'
+      : familias.length + (familias.length === 1 ? ' família encontrada.' : ' famílias encontradas.');
+    familias.forEach(f => {
+      const c = dados(f.nomeResponsavel, f);
+      const tag = el('span', 'tag');
+      const ic = el('span', null, '✔ ');
+      ic.setAttribute('aria-hidden', 'true');
+      tag.append(ic, document.createTextNode(f.status === 'ATIVO' ? 'Ativa' : 'Inativa'));
+      c.append(tag);
+      lista.append(c);
+    });
+  } catch (e) {
+    status.textContent = 'Não foi possível buscar agora. Tente novamente.';
+  }
+}
+
+$('fBusca').addEventListener('submit', e => {
+  e.preventDefault();
+  buscar($('q').value.trim());
+});
+
+function lerFormulario() {
+  return {
+    nomeResponsavel: $('nome').value.trim(),
+    telefone: $('tel').value.trim() || null,
+    bairro: $('bairro').value.trim() || null,
+    documento: $('doc').value.trim() || null,
+    qtdPessoas: parseInt($('pessoas').value, 10) || 0
+  };
+}
+
+async function enviar(confirmar) {
+  const d = lerFormulario();
+  if (!d.nomeResponsavel || d.qtdPessoas < 1) {
+    mostrar(caixa('err', '✖', 'Faltam dados', 'Preencha o nome do responsável e a quantidade de pessoas (pelo menos 1).'));
+    return;
+  }
+  try {
+    const r = await fetch('/api/familias' + (confirmar ? '?confirmar=true' : ''), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(d)
+    });
+    let corpo = null;
+    try { corpo = await r.json(); } catch (_) {}
+    if (r.status === 201) {
+      mostrar(caixa('ok', '✔', 'Família cadastrada', corpo.nomeResponsavel + ' foi cadastrada com sucesso.'));
+      $('fCad').reset();
+    } else if (r.status === 409 && corpo && corpo.existentes) {
+      alertaDuplicidade(d, corpo);
+    } else if (r.status === 409 && corpo && corpo.mensagem) {
+      mostrar(caixa('err', '✖', 'Cadastro não realizado', corpo.mensagem));
+    } else {
+      mostrar(caixa('err', '✖', 'Cadastro não realizado', 'Confira os dados e tente novamente.'));
+    }
+  } catch (e) {
+    mostrar(caixa('err', '✖', 'Sem conexão', 'Não foi possível falar com o sistema. Tente novamente.'));
+  }
+}
+
+function alertaDuplicidade(digitado, corpo) {
+  const b = caixa('warn', '⚠', 'Possível família já cadastrada', corpo.alerta + ' Confira os dados antes de continuar.');
+  const par = el('div', 'pair');
+  par.append(dados('Dados digitados', digitado), dados('Cadastro existente', corpo.existentes[0]));
+  const usar = el('button', 'btn primary', 'Usar cadastro existente');
+  const novo = el('button', 'btn', 'Confirmar como novo');
+  const voltar = el('button', 'link', 'Voltar e corrigir');
+  [usar, novo, voltar].forEach(x => x.type = 'button');
+  usar.addEventListener('click', () => {
+    $('avisos').replaceChildren();
+    $('fCad').reset();
+    $('q').value = corpo.existentes[0].nomeResponsavel;
+    buscar($('q').value);
+    $('q').focus();
+  });
+  novo.addEventListener('click', () => enviar(true));
+  voltar.addEventListener('click', () => { $('avisos').replaceChildren(); $('nome').focus(); });
+  b.append(par, usar, novo, voltar);
+  mostrar(b);
+}
+
+$('fCad').addEventListener('submit', e => {
+  e.preventDefault();
+  enviar(false);
+});
+</script>
+</body>
+</html>
