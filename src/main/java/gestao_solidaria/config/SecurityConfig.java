@@ -13,7 +13,9 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
-            .authorizeHttpRequests(a -> a.anyRequest().authenticated())
+            .authorizeHttpRequests(a -> a
+                .requestMatchers("/health").permitAll()
+                .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults());
         return http.build();
     }
